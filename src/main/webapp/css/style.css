@@ -1,0 +1,30 @@
+.red_light {
+    background-color: indianred;
+}
+
+.green_light {
+    background-color: darkseagreen;
+}
+
+.selected {
+    border: 2px solid green;
+}
+
+.green_light.start {
+    background-color: yellow;
+}
+
+.green_light.finish {
+    background-color: cyan;
+}
+.green_light.path {
+    background-color: mediumpurple;
+}
+
+#setStart {
+    background-color: yellow;
+}
+
+#setFinish {
+    background-color: cyan;
+}
