@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 @Service
 public class AstarServiceImpl implements AstarService {
 
-    private AStar aStar = new AStar();
+    private AStarInterface aStar = new AStarNew();
 
     //unsafe sharing map
     private Map2D map2D;
@@ -59,7 +59,8 @@ public class AstarServiceImpl implements AstarService {
 
     @Override
     public List<MapCell> getPath(MapCell start, MapCell finish) {
-        return aStar.getPath(map2D, start, finish).stream()
+        return aStar.getPath(map2D, start, finish)
+                .stream()
                 .map(cell -> (MapCell) cell)
                 .collect(Collectors.toList());
     }
