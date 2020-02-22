@@ -9,6 +9,8 @@ public interface AstarService {
 
     MapCell getFinishCell(int x, int y);
 
+    MapCell togglePassableCell(int x, int y);
+
     Collection<MapCell> generateNewMap(int x, int y);
 
     Collection<MapCell> generateObstacles(int percentOfTotalCells);

@@ -8,30 +8,12 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" type="text/javascript"></script>
     <script src="js/script.js" type="text/javascript"></script>
     <script>
+      const GREEN = "green_light";
+      const RED = "red_light";
       let start;
       let finish;
       let selectedCell;
       let path = [];
-
-      function tableCreate(x, y) {
-        const body = document.getElementById('map');
-        const tbl = document.createElement('table');
-        tbl.style.width = '100%';
-        tbl.setAttribute('border', '1');
-        let tbdy = document.createElement('tbody');
-        for (let i = 0; i < x; i++) {
-          const tr = document.createElement('tr');
-          for (let j = 0; j < y; j++) {
-            let td = document.createElement('td');
-            tr.appendChild(td);
-          }
-          tbdy.appendChild(tr);
-        }
-
-
-        tbl.appendChild(tbdy);
-        body.appendChild(tbl);
-      }
 
       function tableCreateFromMap(map) {
         const body = document.getElementById('map');
@@ -46,7 +28,7 @@
             let td = document.createElement('td');
             let innerText = map[x][y].x + ":" + map[x][y].y;
             td.innerText = innerText;
-            td.className = map[x][y].passable ? "green_light" : "red_light";
+            td.className = map[x][y].passable ? GREEN : RED;
             td.id = innerText;
             td.onclick = selectCell;
             td.setAttribute("cellX", map[x][y].x);
@@ -81,7 +63,7 @@
         console.log("generateNewMap");
         const x = document.getElementById("first").value;
         const y = document.getElementById("second").value;
-        
+
         const data = {
           x: x,
           y: y
@@ -100,7 +82,7 @@
           }
         });
       }
-      
+
       function getPath() {
         console.log("getPath", start, finish);
         clearPath();
@@ -117,13 +99,11 @@
           contentType: 'application/json',
           dataType: "JSON",
           success: function (data) {
-            console.log(data);
             path = data;
 
-            deleteClassName("start");
             for (let i = 0; i < data.length; i++) {
               window.setTimeout(function () {
-                const element = document.getElementById(data[i].x + ":" + data[i].y);
+                const element = getElementByCell(data[i]);
                 element.classList.add("path");
               }, 200 * i);
             }
@@ -131,68 +111,108 @@
         });
       }
 
-      let clearPath = function () {
+      const clearPath = function () {
         deleteClassName("path");
       };
 
-      let clearSelected = function () {
+      const clearSelected = function () {
         deleteClassName("selected");
       };
 
       function deleteClassName(name) {
-        let selectedElements = document.getElementsByClassName(name);
-        for (let i = 0; i < selectedElements.length; i++) {
-          const element = selectedElements[i];
-          element.classList.remove(name);
-        }
-      }
-      function selectCell(e) {
-        let targetElement = e.target;
-        console.log("selectCell", e, targetElement, targetElement.getAttribute("cellX"), targetElement.getAttribute("cellY"));
-
-        if (targetElement.classList.contains("green_light")) {
-          const tempSelectedCell = {
-            x: targetElement.getAttribute("cellX"),
-            y: targetElement.getAttribute("cellY")
-          };
-          clearPath();
-          clearSelected();
-          if (tempSelectedCell === selectedCell) {
-            selectedCell = {};
-          } else {
-            selectedCell = tempSelectedCell;
-            targetElement.classList.add("selected");
+        while (true) {
+          const selectedElements = document.getElementsByClassName(name);
+          if (selectedElements.length === 0) return;
+          for (let i = 0; i < selectedElements.length; i++) {
+            const element = selectedElements[i];
+            element.classList.remove(name);
           }
         }
       }
-      
-      function setStart() {
-        start = selectedCell;
-        console.log("setStart", start);
-        const startElement = document.getElementById(selectedCell.x + ":" + selectedCell.y);
-        let selectedElements = document.getElementsByClassName("start");
-        for (let i = 0; i < selectedElements.length; i++) {
-          const element = selectedElements[i];
-          element.classList.remove("start");
+
+      function selectCell(e) {
+        let targetElement = e.target;
+        console.log("selectCell", e, targetElement);
+
+        const tempSelectedCell = {
+          x: targetElement.getAttribute("cellX"),
+          y: targetElement.getAttribute("cellY")
+        };
+        clearPath();
+        clearSelected();
+        if (tempSelectedCell === selectedCell) {
+          selectedCell = {};
+          targetElement.classList.remove("selected");
+        } else {
+          selectedCell = tempSelectedCell;
+          targetElement.classList.add("selected");
         }
-        startElement.classList.add("start");
+      }
+
+      function getElementByCell(cell) {
+        return document.getElementById(cell.x + ":" + cell.y);
+      }
+
+      function setStart() {
+        console.log("setStart", selectedCell);
+        const startElement = getElementByCell(selectedCell);
+        if (startElement.classList.contains(GREEN)) {
+          start = selectedCell;
+          let selectedElements = document.getElementsByClassName("start");
+          for (let i = 0; i < selectedElements.length; i++) {
+            const element = selectedElements[i];
+            element.classList.remove("start");
+          }
+          startElement.classList.add("start");
+        }
       }
 
       function generateWalls() {
-        start = selectedCell;
         console.log("generateWalls");
       }
 
+      function togglePassable() {
+        console.log("togglePassable", selectedCell);
+
+        const data = {
+          x: selectedCell.x,
+          y: selectedCell.y
+        };
+        const url = "/togglePassable";
+        console.log("url + data", url, data);
+        $.ajax({
+          url: url,
+          type: "post",
+          data: JSON.stringify(data),
+          contentType: 'application/json',
+          dataType: "JSON",
+          success: function (data) {
+            const finishElement = getElementByCell(selectedCell);
+
+            if (finishElement.classList.contains(GREEN)) {
+              finishElement.classList.remove(GREEN);
+              finishElement.classList.add(RED);
+            } else {
+              finishElement.classList.remove(RED);
+              finishElement.classList.add(GREEN);
+            }
+          }
+        });
+      }
+
       function setFinish() {
-        finish = selectedCell;
-        console.log("setFinish", finish);
-        const finishElement = document.getElementById(selectedCell.x + ":" + selectedCell.y);
-        let selectedElements = document.getElementsByClassName("finish");
-        for (let i = 0; i < selectedElements.length; i++) {
-          const element = selectedElements[i];
-          element.classList.remove("finish");
+        console.log("setFinish", selectedCell);
+        const startElement = getElementByCell(selectedCell);
+        if (startElement.classList.contains(GREEN)) {
+          finish = selectedCell;
+          const finishElement = getElementByCell(selectedCell);
+          let selectedElements = document.getElementsByClassName("finish");
+          for (let i = 0; i < selectedElements.length; i++) {
+            const element = selectedElements[i];
+            element.classList.remove("finish");
+          }
+          finishElement.classList.add("finish");
         }
-        finishElement.classList.add("finish");
       }
 
     </script>
@@ -200,8 +220,8 @@
 
 
 <body>
-<label for="first">Enter maximum x:</label><input type="number" id="first" value="10"/><br/>
-<label for="second">Enter maximum y:</label><input type="number" id="second" value="40"/><br/>
+<label for="first">Enter maximum x:</label><input type="number" id="first" value="20"/><br/>
+<label for="second">Enter maximum y:</label><input type="number" id="second" value="30"/><br/>
 <label for="obstacles">Enter how many percent do you want obstacles:</label>
 <input disabled type="number" id="obstacles" value="20"/><br/>
 
@@ -210,6 +230,7 @@
 <button id="getPath" onclick="getPath()" type="submit">getPath</button>
 <button id="setStart" onclick="setStart()" type="submit">setStart</button>
 <button id="setFinish" onclick="setFinish()" type="submit">setFinish</button>
+<button id="setNotPassable" onclick="togglePassable()" type="submit">setNotPassable</button>
 <div id="map"></div>
 </body>
 </html>

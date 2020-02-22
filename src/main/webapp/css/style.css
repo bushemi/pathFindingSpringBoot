@@ -17,6 +17,7 @@
 .green_light.finish {
     background-color: cyan;
 }
+
 .green_light.path {
     background-color: mediumpurple;
 }
@@ -27,4 +28,8 @@
 
 #setFinish {
     background-color: cyan;
+}
+
+#setNotPassable {
+    background-color: indianred;
 }

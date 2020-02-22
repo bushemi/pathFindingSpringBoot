@@ -13,13 +13,21 @@ public class Controller {
         this.service = service;
     }
 
-
     @PostMapping(value = "/generateNewMap")
     public Object generateNewMap(@RequestBody MapCellSpring cell) {
         System.out.println("Controller.generateNewMap");
         System.out.println("cell = [" + cell + "]");
+
         service.generateNewMap(cell.getX(), cell.getY());
         return service.generateObstacles(20);
+    }
+
+    @PostMapping(value = "/togglePassable")
+    public Object togglePassableCell(@RequestBody MapCellSpring cell) {
+        System.out.println("Controller.togglePassableCell");
+        System.out.println("cell = [" + cell + "]");
+
+        return service.togglePassableCell(cell.getX(), cell.getY());
     }
 
     @PostMapping(value = "/generateObstacles")

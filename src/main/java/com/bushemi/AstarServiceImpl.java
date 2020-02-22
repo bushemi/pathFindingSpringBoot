@@ -36,6 +36,13 @@ public class AstarServiceImpl implements AstarService {
     }
 
     @Override
+    public MapCell togglePassableCell(int x, int y) {
+        MapCell mapCell = getMapCell(x, y);
+        mapCell.setPassable(!mapCell.isPassable());
+        return mapCell;
+    }
+
+    @Override
     public Collection<MapCell> generateNewMap(int x, int y) {
         map2D = new Map2D(x, y);
         return getMapCells(map2D);
