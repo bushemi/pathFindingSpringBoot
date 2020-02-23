@@ -48,5 +48,16 @@ public class Controller {
         return service.getPath(startCell, finishCell);
     }
 
+    @PostMapping(value = "/getPath2")
+    public Object getPath2(@RequestBody PathRequest request) {
+        System.out.println("Controller.getPath2");
+        MapCellSpring start = request.getStart();
+        MapCellSpring finish = request.getFinish();
+        System.out.println("start = [" + start + "], finish = [" + finish + "]");
+        MapCell startCell = service.getStartCell(start.getX(), start.getY());
+        MapCell finishCell = service.getFinishCell(finish.getX(), finish.getY());
+        return service.getPath2(startCell, finishCell);
+    }
+
 
 }

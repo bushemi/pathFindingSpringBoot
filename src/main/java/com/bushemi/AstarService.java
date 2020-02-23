@@ -16,5 +16,6 @@ public interface AstarService {
     Collection<MapCell> generateObstacles(int percentOfTotalCells);
 
     List<MapCell> getPath(MapCell start, MapCell finish);
+    List<MapCell> getPath2(MapCell start, MapCell finish);
 
 }

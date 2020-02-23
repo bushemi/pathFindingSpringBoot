@@ -21,9 +21,20 @@
 .green_light.path {
     background-color: mediumpurple;
 }
+.green_light.path2 {
+    background-color: #eac814;
+}
 
 #setStart {
     background-color: yellow;
+}
+
+#getPath {
+    background-color: mediumpurple;
+}
+
+#getPath2 {
+    background-color: #eac814;
 }
 
 #setFinish {

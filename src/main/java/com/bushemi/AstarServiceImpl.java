@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 public class AstarServiceImpl implements AstarService {
 
     private AStarInterface aStar = new AStarNew();
+    private AStarInterface aStar2 = new AStarF();
 
     //unsafe sharing map
     private Map2D map2D;
@@ -71,4 +72,13 @@ public class AstarServiceImpl implements AstarService {
                 .map(cell -> (MapCell) cell)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<MapCell> getPath2(MapCell start, MapCell finish) {
+        return aStar2.getPath(map2D, start, finish)
+                .stream()
+                .map(cell -> (MapCell) cell)
+                .collect(Collectors.toList());
+    }
+
 }

@@ -10,6 +10,8 @@
     <script>
       const GREEN = "green_light";
       const RED = "red_light";
+      const PATH = "path";
+      const PATH2 = "path2";
       let start;
       let finish;
       let selectedCell;
@@ -86,6 +88,7 @@
       function getPath() {
         console.log("getPath", start, finish);
         clearPath();
+        clearPath2();
         const data = {
           start: start,
           finish: finish
@@ -104,7 +107,7 @@
             for (let i = 0; i < data.length; i++) {
               window.setTimeout(function () {
                 const element = getElementByCell(data[i]);
-                element.classList.add("path");
+                element.classList.add(PATH);
               }, 200 * i);
             }
           }
@@ -112,7 +115,39 @@
       }
 
       const clearPath = function () {
-        deleteClassName("path");
+        deleteClassName(PATH);
+      };
+
+      function getPath2() {
+        console.log("getPath2", start, finish);
+        clearPath2();
+        const data = {
+          start: start,
+          finish: finish
+        };
+        const url = "/getPath2";
+        console.log("url + data", url, data);
+        $.ajax({
+          url: url,
+          type: "post",
+          data: JSON.stringify(data),
+          contentType: 'application/json',
+          dataType: "JSON",
+          success: function (data) {
+            path = data;
+
+            for (let i = 0; i < data.length; i++) {
+              window.setTimeout(function () {
+                const element = getElementByCell(data[i]);
+                element.classList.add(PATH2);
+              }, 200 * i);
+            }
+          }
+        });
+      }
+
+      const clearPath2 = function () {
+        deleteClassName(PATH2);
       };
 
       const clearSelected = function () {
@@ -139,6 +174,7 @@
           y: targetElement.getAttribute("cellY")
         };
         clearPath();
+        clearPath2();
         clearSelected();
         if (tempSelectedCell === selectedCell) {
           selectedCell = {};
@@ -165,10 +201,6 @@
           }
           startElement.classList.add("start");
         }
-      }
-
-      function generateWalls() {
-        console.log("generateWalls");
       }
 
       function togglePassable() {
@@ -222,12 +254,10 @@
 <body>
 <label for="first">Enter maximum x:</label><input type="number" id="first" value="20"/><br/>
 <label for="second">Enter maximum y:</label><input type="number" id="second" value="30"/><br/>
-<label for="obstacles">Enter how many percent do you want obstacles:</label>
-<input disabled type="number" id="obstacles" value="20"/><br/>
 
 <button id="generateNewMap" onclick="generateNewMap()" type="submit">generateNewMap</button>
-<button disabled id="generateWalls" onclick="generateWalls()" type="submit">generateWalls</button>
 <button id="getPath" onclick="getPath()" type="submit">getPath</button>
+<button id="getPath2" onclick="getPath2()" type="submit">getRomansPath</button>
 <button id="setStart" onclick="setStart()" type="submit">setStart</button>
 <button id="setFinish" onclick="setFinish()" type="submit">setFinish</button>
 <button id="setNotPassable" onclick="togglePassable()" type="submit">setNotPassable</button>
